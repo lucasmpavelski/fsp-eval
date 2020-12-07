@@ -42,9 +42,9 @@ if(CPP_STARTER_USE_NANA)
 endif()
 
 # Generic test that uses conan libs
-add_executable(intro main.cpp)
+add_executable(main main.cpp)
 target_link_libraries(
-  intro
+  main
   PRIVATE project_options
           project_warnings
           CONAN_PKG::docopt.cpp
