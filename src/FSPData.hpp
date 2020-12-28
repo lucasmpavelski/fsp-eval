@@ -80,11 +80,13 @@ public:
       total_job_proc_times(no_jobs_),
       total_machine_proc_times(no_machines)
   {
-    if (!jobsPerMachines) {
-      for (unsigned j = 0; j < no_jobs; j++) {
-        for (unsigned m = 0; m < no_machines; m++) {
-          pt(j, m) = pts[j * no_machines + m];
+    for (unsigned j = 0; j < no_jobs; j++) {
+      for (unsigned m = 0; m < no_machines; m++) {
+        unsigned idx = j * no_machines + m;
+        if (jobsPerMachines) {
+          idx = m * no_machines + j;
         }
+        pt(j, m) = pts[idx];
       }
     }
     init();

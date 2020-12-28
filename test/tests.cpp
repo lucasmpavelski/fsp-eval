@@ -1,14 +1,33 @@
 #include <catch2/catch.hpp>
+#include <vector>
 
-unsigned int Factorial(unsigned int number)
+#include <vector>
+
+#include "../src/FSPData.hpp"
+
+TEST_CASE("FSP data load from vector", "[fsp]")
 {
-  return number <= 1 ? number : Factorial(number - 1) * number;
+  const std::vector<int> procTimes = {1,2,3,4,5,6};
+  const int no_jobs = 2;
+  FSPData fspData(procTimes, no_jobs);
+
+  SECTION("number of machines is determined") {
+    REQUIRE(fspData.noMachines() == 3);
+  }
+
+  SECTION("vector is read by row") {
+    REQUIRE(fspData.pt(0, 1) == 2);
+  }
 }
 
-TEST_CASE("Factorials are computed", "[factorial]")
+
+TEST_CASE("FSP data load from vector by jobs", "[fsp]")
 {
-  REQUIRE(Factorial(1) == 1);
-  REQUIRE(Factorial(2) == 2);
-  REQUIRE(Factorial(3) == 6);
-  REQUIRE(Factorial(10) == 3628800);
+  const std::vector<int> procTimes = {1,2,3,4,5,6};
+  const int no_jobs = 2;
+  FSPData fspData(procTimes, no_jobs, true);
+
+  SECTION("vector is read by row") {
+    REQUIRE(fspData.pt(0, 1) == 4);
+  }
 }
