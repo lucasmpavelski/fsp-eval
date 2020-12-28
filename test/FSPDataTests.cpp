@@ -7,7 +7,7 @@
 
 TEST_CASE("FSP data load from vector", "[fsp]")
 {
-  const std::vector<int> procTimes = { 1, 2, 3, 4, 5, 6 };
+  const std::vector<unsigned> procTimes = { 1, 2, 3, 4, 5, 6 };
   const int no_jobs = 2;
   FSPData fspData(procTimes, no_jobs);
 
@@ -25,9 +25,10 @@ TEST_CASE("FSP data load from vector", "[fsp]")
 
 TEST_CASE("FSP data load from vector by jobs", "[fsp]")
 {
-  const std::vector<int> procTimes = { 1, 2, 3, 4, 5, 6 };
+  const std::vector<unsigned> procTimes = { 1, 2, 3, 4, 5, 6 };
   const int no_jobs = 2;
-  FSPData fspData(procTimes, no_jobs, true);
+  const bool jobsByMachines = true;
+  FSPData fspData(procTimes, no_jobs, jobsByMachines);
 
   SECTION("vector is read by row")
   {
