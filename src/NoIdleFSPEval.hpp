@@ -89,9 +89,9 @@ class NoIdleFSPEval : public virtual FSPEval {
   }
 };
 
-class NoIdleFSPMakespanEval : public FSPMakespanEval, public NoIdleFSPEval {
+class NoIdleFSPMakespanEvalFunction : public FSPMakespanEvalFunction, public NoIdleFSPEval {
  public:
-  NoIdleFSPMakespanEval(const FSPData& fspData)
+  NoIdleFSPMakespanEvalFunction(const FSPData& fspData)
       : FSPEval{fspData}, NoIdleFSPEval{fspData} {}
 };
 

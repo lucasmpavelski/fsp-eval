@@ -100,9 +100,9 @@ class NoWaitFSPEval : virtual public FSPEval {
   }
 };
 
-class NoWaitFSPMakespanEval : public NoWaitFSPEval, public FSPMakespanEval {
+class NoWaitFSPMakespanEvalFunction : public NoWaitFSPEval, public FSPMakespanEvalFunction {
  public:
-  NoWaitFSPMakespanEval(const FSPData& fspData)
+  NoWaitFSPMakespanEvalFunction(const FSPData& fspData)
       : FSPEval{fspData}, NoWaitFSPEval{fspData} {}
 };
 

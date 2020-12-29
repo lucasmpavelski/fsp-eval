@@ -7,17 +7,17 @@
 #include <numeric>
 #include <cassert>
 
-class FSPSchedule
+class Schedule
 {
 public:
   using difference_type = typename std::vector<unsigned>::difference_type;
   using size_type = typename std::vector<unsigned>::size_type;
 
-  explicit FSPSchedule(size_type size) : jobOrder(permutationOfSize(size))
+  explicit Schedule(size_type size) : jobOrder(permutationOfSize(size))
   {
   }
 
-  FSPSchedule(std::initializer_list<unsigned> order) : jobOrder(order)
+  Schedule(std::initializer_list<unsigned> order) : jobOrder(order)
   {
     if (!isPermutation()) {
       throw std::runtime_error("Job order is not a valid permutation!");

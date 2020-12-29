@@ -1,25 +1,21 @@
 #pragma once
 
-#include <algorithm>
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "FSPData.hpp"
-#include "FSPEval.hpp"
-#include "FSPSchedule.hpp"
+#include "Schedule.hpp"
 
-class PermFSPCompiler {
+class PermutationCompiler {
   const FSPData& fspData;
   std::vector<unsigned> part_ct;
   std::vector<unsigned> cache;
   unsigned noJobs;
 
  public:
-  explicit PermFSPCompiler(const FSPData& fspData)
+  explicit PermutationCompiler(const FSPData& fspData)
       : fspData{fspData}, part_ct(fspData.noJobs() * fspData.noMachines()), cache(fspData.noJobs()), noJobs(fspData.noJobs()) {}
 
-  void compile(const FSPSchedule& _fsp, std::vector<unsigned>& Ct) {
+  void compile(const Schedule& _fsp, std::vector<unsigned>& Ct) {
     const auto _N = static_cast<unsigned>(_fsp.size());
     const auto N = fspData.noJobs();
     const auto M = fspData.noMachines();
@@ -85,30 +81,4 @@ class PermFSPCompiler {
     auto toCt = fromCt + _N;
     Ct.assign(fromCt, toCt);
   }
-};
-
-class PermFSPEval : virtual public FSPEvalFunction {
-  PermFSPCompiler compiler;
-
- public:
-  explicit PermFSPEval(const FSPData& fspData) : compiler{fspData} {}
-
-  [[nodiscard]] auto type() const -> std::string final { return "PERM"; }
-
- protected:
-  void compileCompletionTimes(const FSPSchedule& perm, std::vector<unsigned>& cts) override {
-    compiler.compile(perm, cts);
-  }
-};
-
-class PermutationMakespanEval : public PermFSPEval, public FSPMakespanEval {
- public:
-  explicit PermutationMakespanEval(const FSPData& fspData)
-      : FSPEvalFunction{fspData}, PermFSPEval{fspData} {}
-};
-
-class PermFSPFlowtimeEval : public PermFSPEval, public FSPFlowtimeEval {
- public:
-  explicit PermFSPFlowtimeEval(const FSPData& fspData)
-      : FSPEvalFunction{fspData}, PermFSPEval{fspData} {}
 };

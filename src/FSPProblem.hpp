@@ -259,15 +259,15 @@ struct FSPProblem : public Problem<FSPNeighbor> {
   auto getEvalFunc(const std::string& type, const std::string& obj)
       -> std::unique_ptr<FSPEval> {
     if (type == "PERM" && obj == "MAKESPAN") {
-      return std::make_unique<PermFSPMakespanEval>(_data);
+      return std::make_unique<PermFSPMakespanEvalFunction>(_data);
     } else if (type == "PERM" && obj == "FLOWTIME") {
       return std::make_unique<PermFSPFlowtimeEval>(_data);
     } else if (type == "NOWAIT" && obj == "MAKESPAN") {
-      return std::make_unique<NoWaitFSPMakespanEval>(_data);
+      return std::make_unique<NoWaitFSPMakespanEvalFunction>(_data);
     } else if (type == "NOWAIT" && obj == "FLOWTIME") {
       return std::make_unique<NoWaitFSPFlowtimeEval>(_data);
     } else if (type == "NOIDLE" && obj == "MAKESPAN") {
-      return std::make_unique<NoIdleFSPMakespanEval>(_data);
+      return std::make_unique<NoIdleFSPMakespanEvalFunction>(_data);
     } else if (type == "NOIDLE" && obj == "FLOWTIME") {
       return std::make_unique<NoIdleFSPFlowtimeEval>(_data);
     } else {
