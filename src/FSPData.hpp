@@ -65,6 +65,8 @@ public:
   FSPData(const std::vector<unsigned> &pts, unsigned no_jobs_)
     : FSPData{ pts, no_jobs_, false } {};
 
+
+
   friend auto operator<<(std::ostream &o, const FSPData &d) -> std::ostream &
   {
     o << "FSPData:\n"//

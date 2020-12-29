@@ -13,6 +13,8 @@ add_executable(
   tests 
   FSPDataTests.cpp
   FSPDataStatisticsTests.cpp
+  FSPScheduleTests.cpp
+  PermutationMakespanEvalTests.cpp
 )
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 

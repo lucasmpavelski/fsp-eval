@@ -5,23 +5,24 @@
 #include <utility>
 #include <vector>
 
-#include "flowshop-solver/problems/FSPData.hpp"
-#include "flowshop-solver/problems/FSPEval.hpp"
+#include "FSPData.hpp"
+#include "FSPEval.hpp"
+#include "FSPSchedule.hpp"
 
 class PermFSPCompiler {
   const FSPData& fspData;
-  std::vector<int> part_ct;
-  std::vector<int> cache;
-  int noJobs;
+  std::vector<unsigned> part_ct;
+  std::vector<unsigned> cache;
+  unsigned noJobs;
 
  public:
-  PermFSPCompiler(const FSPData& fspData)
-      : fspData{fspData}, part_ct(fspData.noJobs() * fspData.noMachines()), cache(fspData.noJobs(), -1), noJobs(fspData.noJobs()) {}
+  explicit PermFSPCompiler(const FSPData& fspData)
+      : fspData{fspData}, part_ct(fspData.noJobs() * fspData.noMachines()), cache(fspData.noJobs()), noJobs(fspData.noJobs()) {}
 
-  void compile(const std::vector<int>& _fsp, std::vector<int>& Ct) {
-    const int _N = _fsp.size();
-    const int N = fspData.noJobs();
-    const int M = fspData.noMachines();
+  void compile(const FSPSchedule& _fsp, std::vector<unsigned>& Ct) {
+    const auto _N = static_cast<unsigned>(_fsp.size());
+    const auto N = fspData.noJobs();
+    const auto M = fspData.noMachines();
     const auto& p = fspData.procTimesRef();
 
     // std::cout << _fsp << '\n';
@@ -35,24 +36,23 @@ class PermFSPCompiler {
     /** extra **/
 
     part_ct[0 * N + 0] = p[0 * N + _fsp[0]];
-    for (int i = 1; i < _N; i++) {
+    for (auto i = 1; i < _N; i++) {
       part_ct[0 * N + i] = part_ct[0 * N + i - 1] + p[0 * N + _fsp[i]];
     }
 
-    for (int j = 1; j < M; j++) {
+    for (auto j = 1; j < M; j++) {
       part_ct[j * N + 0] = part_ct[(j - 1) * N + 0] + p[j * N + _fsp[0]];
     }
 
     bool cachedJob = cache[0] == _fsp[0];
-    for (int i = 1; i < _N; i++) {
-      int pt_index = _fsp[i];
+    for (auto i = 1; i < _N; i++) {
+      unsigned pt_index = _fsp[i];
       if (cachedJob && cache[i] == pt_index) {
         continue;
-      } else {
-        cachedJob = false;
-        cache[i] = pt_index;
       }
-      for (int j = 1; j < M; j++) {
+      cachedJob = false;
+      cache[i] = pt_index;
+      for (unsigned j = 1; j < M; j++) {
         int ct_jm1_m = part_ct[j * N + i - 1];
         int ct_j_mm1 = part_ct[(j - 1) * N + i];
         int pt_i = p[j * N + pt_index];
@@ -87,28 +87,28 @@ class PermFSPCompiler {
   }
 };
 
-class PermFSPEval : virtual public FSPEval {
+class PermFSPEval : virtual public FSPEvalFunction {
   PermFSPCompiler compiler;
 
  public:
-  PermFSPEval(const FSPData& fspData) : compiler{fspData} {}
+  explicit PermFSPEval(const FSPData& fspData) : compiler{fspData} {}
 
   [[nodiscard]] auto type() const -> std::string final { return "PERM"; }
 
  protected:
-  void compileCompletionTimes(const FSP& perm, std::vector<int>& cts) override {
+  void compileCompletionTimes(const FSPSchedule& perm, std::vector<unsigned>& cts) override {
     compiler.compile(perm, cts);
   }
 };
 
-class PermFSPMakespanEval : public PermFSPEval, public FSPMakespanEval {
+class PermutationMakespanEval : public PermFSPEval, public FSPMakespanEval {
  public:
-  PermFSPMakespanEval(const FSPData& fspData)
-      : FSPEval{fspData}, PermFSPEval{fspData} {}
+  explicit PermutationMakespanEval(const FSPData& fspData)
+      : FSPEvalFunction{fspData}, PermFSPEval{fspData} {}
 };
 
 class PermFSPFlowtimeEval : public PermFSPEval, public FSPFlowtimeEval {
  public:
-  PermFSPFlowtimeEval(const FSPData& fspData)
-      : FSPEval{fspData}, PermFSPEval{fspData} {}
+  explicit PermFSPFlowtimeEval(const FSPData& fspData)
+      : FSPEvalFunction{fspData}, PermFSPEval{fspData} {}
 };

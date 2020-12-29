@@ -1,14 +1,11 @@
 #pragma once
 
-#include <paradiseo/mo/mo>
-#include <paradiseo/eo/eo>
+#include <algorithm>
+#include <vector>
 
-#include <paradiseo/eo/eoInt.h>
-
-template <class EOT, class Fitness = typename EOT::Fitness>
-class myShiftNeighbor : public moIndexNeighbor<EOT, Fitness> {
+class myShiftNeighbor {
+  
  public:
-  using moIndexNeighbor<EOT, Fitness>::key;
 
   myShiftNeighbor() = default;
   myShiftNeighbor(int from, int to, int size) : myShiftNeighbor{} {
@@ -19,7 +16,7 @@ class myShiftNeighbor : public moIndexNeighbor<EOT, Fitness> {
    * Apply move on a solution regarding a key
    * @param _sol the solution to move
    */
-  void move(EOT& _sol) override {
+  void move(std::vector<int>& _sol) {
     if (static_cast<int>(key) >= 0) {
       unsigned int tmp;
       size = _sol.size();
@@ -38,7 +35,6 @@ class myShiftNeighbor : public moIndexNeighbor<EOT, Fitness> {
         // shift the first component
         _sol[second] = tmp;
       }
-      _sol.invalidate();
     } else {
       auto begin = _sol.begin();
       if (first == second) {
@@ -51,8 +47,6 @@ class myShiftNeighbor : public moIndexNeighbor<EOT, Fitness> {
       _sol.invalidate();
     }
   }
-
-  using moIndexNeighbor<EOT, Fitness>::index;
 
   void set(unsigned first, unsigned second, unsigned size) {
     this->first = first;
@@ -108,16 +102,8 @@ class myShiftNeighbor : public moIndexNeighbor<EOT, Fitness> {
     }
   }
 
-  void print() {
-    std::cout << key << ": [" << first << ", " << second << "] -> "
-              << (*this).fitness() << std::endl;
-  }
-
  private:
   unsigned int first;
   unsigned int second;
   unsigned int size;
 };
-
-using FSP = eoInt<eoMinimizingFitness>;
-using FSPNeighbor = myShiftNeighbor<FSP>;
