@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <initializer_list>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 #include <numeric>
 #include <cassert>
@@ -16,6 +17,8 @@ public:
   using const_iterator = typename std::vector<unsigned>::const_iterator;
 
   Schedule() = default;
+
+  explicit Schedule(std::vector<unsigned> jobOrder) : jobOrder(std::move(jobOrder)) {}
 
   explicit Schedule(size_type size) : jobOrder(permutationOfSize(size))
   {
@@ -54,15 +57,18 @@ public:
     return jobOrder.cend();
   }
 
-  auto erase(const_iterator first) {
+  auto erase(const_iterator first)
+  {
     return jobOrder.erase(first);
   }
 
-  auto erase(const_iterator first, const_iterator last) {
+  auto erase(const_iterator first, const_iterator last)
+  {
     return jobOrder.erase(first, last);
   }
 
-  auto insert(const_iterator first, unsigned el) {
+  auto insert(const_iterator first, unsigned el)
+  {
     return jobOrder.insert(first, el);
   }
 
