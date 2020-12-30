@@ -3,6 +3,7 @@
 #include "Schedule.hpp"
 #include "FSPData.hpp"
 #include "EvalFunction.hpp"
+#include "Type.hpp"
 #include "NoIdleCompletionTimesCompiler.hpp"
 
 
@@ -13,7 +14,7 @@ class NoIdleEvalFunction : public virtual EvalFunction
 public:
   explicit NoIdleEvalFunction(const FSPData &data) : compiler(data) {}
 
-  [[nodiscard]] auto type() const -> std::string override { return "NOIDLE"; }
+  [[nodiscard]] auto type() const -> Type override { return Type::NOIDLE; }
 
 protected:
   void compileCompletionTimes(const Schedule &sol, std::vector<unsigned> &ct) override

@@ -8,6 +8,8 @@
 
 #include "FSPData.hpp"
 #include "Schedule.hpp"
+#include "Type.hpp"
+#include "Objective.hpp"
 
 class EvalFunction
 {
@@ -25,8 +27,8 @@ public:
   [[nodiscard]] auto noJobs() const -> unsigned { return fspData.noJobs(); }
   [[nodiscard]] auto noMachines() const -> unsigned { return fspData.noMachines(); }
   [[nodiscard]] auto getData() const -> const FSPData & { return fspData; }
-  [[nodiscard]] virtual auto type() const -> std::string = 0;
-  [[nodiscard]] virtual auto objective() const -> std::string = 0;
+  [[nodiscard]] virtual auto type() const -> Type = 0;
+  [[nodiscard]] virtual auto objective() const -> Objective = 0;
 
   void printOn(std::ostream &o)
   {
@@ -36,7 +38,14 @@ public:
       << fspData;
   }
 
-  virtual auto operator()(const Schedule& schedule) -> double = 0;
+  virtual auto operator()(const Schedule &schedule) -> double = 0;
+
+  friend auto operator==(const EvalFunction &lhs, const EvalFunction &rhs) -> bool
+  {
+    return lhs.objective() == rhs.objective() &&//
+           lhs.type() == rhs.type() &&//
+           lhs.getData() == rhs.getData();
+  }
 
 protected:
   auto completionTime(std::vector<int>::size_type i) -> unsigned & { return compTimes[i]; }
@@ -46,6 +55,3 @@ protected:
   virtual void compileCompletionTimes(const Schedule &schedule,
     std::vector<unsigned> &ct) = 0;
 };
-
-
-

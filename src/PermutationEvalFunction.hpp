@@ -13,7 +13,7 @@ class PermutationEvalFunction : virtual public EvalFunction {
  public:
   explicit PermutationEvalFunction(const FSPData& fspData) : compiler{fspData} {}
 
-  [[nodiscard]] auto type() const -> std::string final { return "PERM"; }
+  [[nodiscard]] auto type() const -> Type final { return Type::PERMUTATION; }
 
  protected:
   void compileCompletionTimes(const Schedule& perm, std::vector<unsigned>& cts) override {

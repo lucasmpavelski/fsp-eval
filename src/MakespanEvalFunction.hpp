@@ -14,8 +14,8 @@ public:
     return perm.size() == 0 ? 0 : completionTime(perm.size() - 1);
   }
 
-  [[nodiscard]] auto objective() const -> std::string override
+  [[nodiscard]] auto objective() const -> Objective override
   {
-    return "MAKESPAN";
+    return Objective::MAKESPAN;
   }
 };

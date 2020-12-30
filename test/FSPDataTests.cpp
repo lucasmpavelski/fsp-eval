@@ -53,3 +53,11 @@ TEST_CASE("FSP data load from file", "[fsp]")
     REQUIRE(fspData.pt(0, 1) == 9);
   }
 }
+
+TEST_CASE("FSP data can be compared with equals operator", "[fsp]")
+{
+  FSPData fspData1("test/instance.txt");
+  FSPData fspData2("test/instance.txt");
+
+  REQUIRE(fspData1 == fspData2);
+}

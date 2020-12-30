@@ -66,7 +66,6 @@ public:
     : FSPData{ pts, no_jobs_, false } {};
 
 
-
   friend auto operator<<(std::ostream &o, const FSPData &d) -> std::ostream &
   {
     o << "FSPData:\n"//
@@ -114,5 +113,15 @@ public:
       sm += pt(job, j);
     }
     return sm;
+  }
+
+  friend auto operator==(const FSPData &lhs, const FSPData &rhs) -> bool
+  {
+    return lhs.noJobs() == rhs.noJobs() &&//
+           lhs.noMachines() == rhs.noMachines() &&//
+           std::equal(lhs.procTimesRef().begin(),//
+             lhs.procTimesRef().end(),//
+             rhs.procTimesRef().begin(),//
+             rhs.procTimesRef().end());
   }
 };

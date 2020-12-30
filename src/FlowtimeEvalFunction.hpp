@@ -15,8 +15,8 @@ public:
     return std::accumulate(begCT, endCT, 0U);
   }
 
-  [[nodiscard]] auto objective() const -> std::string override
+  [[nodiscard]] auto objective() const -> Objective override
   {
-    return "MAKESPAN";
+    return Objective::FLOWTIME;
   }
 };

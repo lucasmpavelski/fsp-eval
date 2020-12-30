@@ -10,7 +10,7 @@ class NoWaitEvalFunction : virtual public EvalFunction {
  public:
   explicit NoWaitEvalFunction(const FSPData& fspData) : compiler{fspData} {}
 
-  [[nodiscard]] auto type() const -> std::string final { return "NOWAIT"; }
+  [[nodiscard]] auto type() const -> Type final { return Type::NOWAIT; }
 
   [[nodiscard]] auto delay(int i, int j) const -> int {
     return compiler.delay(i, j);
