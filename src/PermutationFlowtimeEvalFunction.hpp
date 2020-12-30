@@ -5,8 +5,8 @@
 #include "FlowtimeEvalFunction.hpp"
 
 
-class PermFSPFlowtimeEval : public PermutationEvalFunction, public FlowtimeEvalFunction {
+class PermutationFlowtimeEvalFunction : public PermutationEvalFunction, public FlowtimeEvalFunction {
  public:
-  explicit PermFSPFlowtimeEval(const FSPData& fspData)
+  explicit PermutationFlowtimeEvalFunction(const FSPData& fspData)
       : EvalFunction{fspData}, PermutationEvalFunction{fspData} {}
 };

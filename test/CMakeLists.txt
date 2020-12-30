@@ -14,7 +14,12 @@ add_executable(
   FSPDataTests.cpp
   FSPDataStatisticsTests.cpp
   ScheduleTests.cpp
-  PermutationMakespanEvalTests.cpp
+  PermutationMakespanEvalFunctionTests.cpp
+  PermutationFlowtimeEvalFunctionTests.cpp
+  NoIdleMakespanEvalFunctionTests.cpp
+  NoIdleFlowtimeEvalFunctionTests.cpp
+  NoWaitMakespanEvalFunctionTests.cpp
+  NoWaitFlowtimeEvalFunctionTests.cpp
 )
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 
