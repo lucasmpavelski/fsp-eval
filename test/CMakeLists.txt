@@ -21,6 +21,8 @@ add_executable(
   NoWaitMakespanEvalFunctionTests.cpp
   NoWaitFlowtimeEvalFunctionTests.cpp
   PermutationMakespanNeighborEvalFunctionTests.cpp
+  NoIdleMakespanNeighborEvalFunctionTests.cpp
+  NoIdleFlowtimeNeighborEvalFunctionTests.cpp
 )
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 

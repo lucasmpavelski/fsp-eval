@@ -15,6 +15,8 @@ public:
   using iterator = typename std::vector<unsigned>::iterator;
   using const_iterator = typename std::vector<unsigned>::const_iterator;
 
+  Schedule() = default;
+
   explicit Schedule(size_type size) : jobOrder(permutationOfSize(size))
   {
   }
@@ -50,6 +52,18 @@ public:
   [[nodiscard]] const_iterator end() const
   {
     return jobOrder.cend();
+  }
+
+  auto erase(const_iterator first) {
+    return jobOrder.erase(first);
+  }
+
+  auto erase(const_iterator first, const_iterator last) {
+    return jobOrder.erase(first, last);
+  }
+
+  auto insert(const_iterator first, unsigned el) {
+    return jobOrder.insert(first, el);
   }
 
 private:
