@@ -3,22 +3,24 @@
 
 #include <vector>
 
-#include "../src/FSPData.hpp"
+#include "../src/Instance.hpp"
+
+using namespace fsp;
 
 TEST_CASE("FSP data load from vector", "[fsp]")
 {
   const std::vector<unsigned> procTimes = { 1, 2, 3, 4, 5, 6 };
   const int no_jobs = 2;
-  FSPData fspData(procTimes, no_jobs);
+  Instance instance(procTimes, no_jobs);
 
   SECTION("number of machines is determined")
   {
-    REQUIRE(fspData.noMachines() == 3);
+    REQUIRE(instance.noMachines() == 3);
   }
 
   SECTION("vector is read by row")
   {
-    REQUIRE(fspData.pt(0, 1) == 2);
+    REQUIRE(instance.pt(0, 1) == 2);
   }
 }
 
@@ -28,36 +30,36 @@ TEST_CASE("FSP data load from vector by jobs", "[fsp]")
   const std::vector<unsigned> procTimes = { 1, 2, 3, 4, 5, 6 };
   const int no_jobs = 2;
   const bool jobsByMachines = true;
-  FSPData fspData(procTimes, no_jobs, jobsByMachines);
+  Instance instance(procTimes, no_jobs, jobsByMachines);
 
   SECTION("vector is read by row")
   {
-    REQUIRE(fspData.pt(0, 1) == 4);
+    REQUIRE(instance.pt(0, 1) == 4);
   }
 }
 
 
 TEST_CASE("FSP data load from file", "[fsp]")
 {
-  FSPData fspData("test/instance.txt");
+  Instance instance("test/instance.txt");
 
   SECTION("dimensions are correct")
   {
-    REQUIRE(fspData.noJobs() == 4);
-    REQUIRE(fspData.noMachines() == 5);
+    REQUIRE(instance.noJobs() == 4);
+    REQUIRE(instance.noMachines() == 5);
   }
 
   SECTION("processing times are loaded")
   {
-    REQUIRE(fspData.pt(0, 0) == 5);
-    REQUIRE(fspData.pt(0, 1) == 9);
+    REQUIRE(instance.pt(0, 0) == 5);
+    REQUIRE(instance.pt(0, 1) == 9);
   }
 }
 
 TEST_CASE("FSP data can be compared with equals operator", "[fsp]")
 {
-  FSPData fspData1("test/instance.txt");
-  FSPData fspData2("test/instance.txt");
+  Instance instance1("test/instance.txt");
+  Instance instance2("test/instance.txt");
 
-  REQUIRE(fspData1 == fspData2);
+  REQUIRE(instance1 == instance2);
 }

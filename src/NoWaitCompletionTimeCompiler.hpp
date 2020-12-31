@@ -3,21 +3,24 @@
 #include <ostream>
 #include <vector>
 
-#include "FSPData.hpp"
-#include "FSPDataStatistics.hpp"
+#include "Instance.hpp"
+#include "InstanceStatistics.hpp"
 #include "EvalFunction.hpp"
 #include "Schedule.hpp"
 
+namespace fsp {
 
-class NoWaitCompletionTimeCompiler {
-  const FSPData& fspData;
-  const FSPDataStatistics stats;
+class NoWaitCompletionTimeCompiler
+{
+  const Instance &instance;
+  const InstanceStatistics stats;
   std::vector<int> delayMatrix;
 
-  [[nodiscard]] auto computeDelayMatrix() const -> std::vector<int> {
-    const unsigned N = fspData.noJobs();
-    const unsigned M = fspData.noMachines();
-    const auto& p = fspData.procTimesRef();
+  [[nodiscard]] auto computeDelayMatrix() const -> std::vector<int>
+  {
+    const unsigned N = instance.noJobs();
+    const unsigned M = instance.noMachines();
+    const auto &p = instance.procTimesRef();
     std::vector<int> _delayMatrix(N * N);
 
     // See : A heuristic for no-wait flow shop scheduling (2013) Sagar U. Sapkal
@@ -52,12 +55,13 @@ class NoWaitCompletionTimeCompiler {
     return _delayMatrix;
   }
 
- public:
-  explicit NoWaitCompletionTimeCompiler(const FSPData& fspData)
-      : fspData{fspData}, stats{fspData}, delayMatrix{computeDelayMatrix()} {}
+public:
+  explicit NoWaitCompletionTimeCompiler(const Instance &instance)
+    : instance{ instance }, stats{ instance }, delayMatrix{ computeDelayMatrix() } {}
 
-  void compile(const Schedule& _fsp, std::vector<unsigned>& Ct) {
-    const unsigned N = fspData.noJobs();
+  void compile(const Schedule &_fsp, std::vector<unsigned> &Ct)
+  {
+    const unsigned N = instance.noJobs();
     const unsigned _N = _fsp.size();
 
     int delay = 0;
@@ -69,7 +73,10 @@ class NoWaitCompletionTimeCompiler {
     }
   }
 
-  [[nodiscard]] auto delay(int i, int j) const -> int {
-    return delayMatrix[i * fspData.noJobs() + j];
+  [[nodiscard]] auto delay(int i, int j) const -> int
+  {
+    return delayMatrix[i * instance.noJobs() + j];
   }
 };
+
+}// namespace fsp

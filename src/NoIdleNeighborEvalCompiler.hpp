@@ -1,14 +1,16 @@
 #pragma once
 
 #include "Schedule.hpp"
-#include "FSPData.hpp"
-#include "FSPDataStatistics.hpp"
+#include "Instance.hpp"
+#include "InstanceStatistics.hpp"
+
+namespace fsp {
 
 class NoIdleNeighborEvalCompiler
 {
   class NoIdleFSPNeighborEvalCache
   {
-    const FSPData &fspData;
+    const Instance &instance;
     Schedule compiledCache;
     using job_t = unsigned short;
 
@@ -16,36 +18,36 @@ class NoIdleNeighborEvalCompiler
     std::vector<job_t> _E;
     std::vector<job_t> _Ff;
 
-    [[nodiscard]] auto pt(unsigned j, int m) -> job_t { return fspData.pt(j, m); }
+    [[nodiscard]] auto pt(unsigned j, int m) -> job_t { return instance.pt(j, m); }
 
   public:
-    explicit NoIdleFSPNeighborEvalCache(const FSPData &fspData)
-      : fspData(fspData),
-        _F(fspData.noJobs() * fspData.noMachines(), 0),
-        _E(fspData.noJobs() * fspData.noMachines(), 0),
-        _Ff(fspData.noJobs() * fspData.noMachines(), 0) {}
+    explicit NoIdleFSPNeighborEvalCache(const Instance &instance)
+      : instance(instance),
+        _F(instance.noJobs() * instance.noMachines(), 0),
+        _E(instance.noJobs() * instance.noMachines(), 0),
+        _Ff(instance.noJobs() * instance.noMachines(), 0) {}
 
-    auto F(int j, int m) -> job_t & { return _F[m * fspData.noJobs() + j]; }
-    auto E(int j, int m) -> job_t & { return _E[m * fspData.noJobs() + j]; }
-    auto Ff(int j, int m) -> job_t & { return _Ff[m * fspData.noJobs() + j]; }
+    auto F(int j, int m) -> job_t & { return _F[m * instance.noJobs() + j]; }
+    auto E(int j, int m) -> job_t & { return _E[m * instance.noJobs() + j]; }
+    auto Ff(int j, int m) -> job_t & { return _Ff[m * instance.noJobs() + j]; }
 
     [[nodiscard]] auto F(int j, int m) const -> job_t
     {
-      return _F[m * fspData.noJobs() + j];
+      return _F[m * instance.noJobs() + j];
     }
     [[nodiscard]] auto E(int j, int m) const -> job_t
     {
-      return _E[m * fspData.noJobs() + j];
+      return _E[m * instance.noJobs() + j];
     }
     [[nodiscard]] auto Ff(int j, int m) const -> job_t
     {
-      return _Ff[m * fspData.noJobs() + j];
+      return _Ff[m * instance.noJobs() + j];
     }
 
     void compile(const Schedule &partialPerm)
     {
       const int noJobs = static_cast<int>(partialPerm.size());
-      const int noMachines = static_cast<int>(fspData.noMachines());
+      const int noMachines = static_cast<int>(instance.noMachines());
 
       // Calculate F(p^E_j, k, k+1)
       for (int k = 0; k < noMachines - 1; k++) {
@@ -89,23 +91,23 @@ class NoIdleNeighborEvalCompiler
     }
   };
 
-  const FSPData &fspData;
-  const FSPDataStatistics stats;
+  const Instance &instance;
+  const InstanceStatistics stats;
   std::vector<NoIdleFSPNeighborEvalCache> caches;
   std::vector<int> _Ct;
 
 public:
-  explicit NoIdleNeighborEvalCompiler(const FSPData &fspData)
-    : fspData(fspData),
-      stats(fspData),
-      _Ct(fspData.noJobs(), 0)
+  explicit NoIdleNeighborEvalCompiler(const Instance &instance)
+    : instance(instance),
+      stats(instance),
+      _Ct(instance.noJobs(), 0)
   {
-    for (unsigned i = 0; i < fspData.noJobs(); i++) {
-      caches.emplace_back(fspData);
+    for (unsigned i = 0; i < instance.noJobs(); i++) {
+      caches.emplace_back(instance);
     }
   }
 
-  // [[nodiscard]] auto noJobs() -> int { return fspData.noJobs(); }
+  // [[nodiscard]] auto noJobs() -> int { return instance.noJobs(); }
 
   void compile(const Schedule &perm,
     const std::pair<unsigned, unsigned> &move)
@@ -119,19 +121,19 @@ public:
     caches[t].compile(partialPerm);
     const auto &cache = caches[t];
 
-    const int noMachines = static_cast<int>(fspData.noMachines());
+    const int noMachines = static_cast<int>(instance.noMachines());
 
     // Calculate F(pEh, k, k+1) appending job h
     std::vector<int> FpEh(noMachines - 1, 0);
     if (h == 0) {
       for (int k = 0; k < noMachines - 1; k++) {
-        FpEh[k] = fspData.pt(perm[t], k + 1);
+        FpEh[k] = instance.pt(perm[t], k + 1);
       }
 
     } else {
       for (int k = 0; k < noMachines - 1; k++) {
-        const auto p_h_k = static_cast<int>(fspData.pt(perm[t], k));
-        const auto p_h_kp1 = static_cast<int>(fspData.pt(perm[t], k + 1));
+        const auto p_h_k = static_cast<int>(instance.pt(perm[t], k));
+        const auto p_h_kp1 = static_cast<int>(instance.pt(perm[t], k + 1));
         const auto F_hm1_k = static_cast<int>(cache.F(static_cast<int>(h) - 1, k));
         FpEh[k] = std::max(F_hm1_k - p_h_k, 0) + p_h_kp1;
       }
@@ -152,7 +154,7 @@ public:
       std::accumulate(begin(Fp), end(Fp), 0) + stats.machineProcTime(0);
 
     for (int j = static_cast<int>(newPerm.size()) - 2; j >= 0; j--) {
-      _Ct[j] = _Ct[j + 1] - fspData.pt(newPerm[j + 1], noMachines - 1);
+      _Ct[j] = _Ct[j + 1] - instance.pt(newPerm[j + 1], noMachines - 1);
     }
   }
 
@@ -166,3 +168,5 @@ public:
     return std::accumulate(begin(_Ct), end(_Ct), 0);
   }
 };
+
+}// namespace fsp

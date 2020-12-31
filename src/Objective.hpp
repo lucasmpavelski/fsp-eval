@@ -4,6 +4,8 @@
 #include <string>
 #include <exception>
 
+namespace fsp {
+
 enum class Objective {
   MAKESPAN,
   FLOWTIME
@@ -36,3 +38,5 @@ auto operator<<(std::basic_ostream<T> &os, const Objective &objective) -> std::b
 {
   return os << asString(objective);
 }
+
+}// namespace fsp

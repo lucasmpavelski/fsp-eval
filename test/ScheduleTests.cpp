@@ -4,6 +4,8 @@
 
 #include "../src/Schedule.hpp"
 
+using namespace fsp;
+
 TEST_CASE("Create default ordered schedule", "[fsp]")
 {
   Schedule schedule(3);

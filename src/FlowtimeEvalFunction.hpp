@@ -2,6 +2,8 @@
 
 #include "EvalFunction.hpp"
 
+namespace fsp {
+
 class FlowtimeEvalFunction : virtual public EvalFunction
 {
 public:
@@ -20,3 +22,5 @@ public:
     return Objective::FLOWTIME;
   }
 };
+
+}

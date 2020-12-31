@@ -10,14 +10,16 @@
 #include <random>
 #include <cassert>
 
-class FSPData
+namespace fsp {
+
+class Instance
 {
   using ivec = std::vector<unsigned>;
   unsigned no_jobs{ 0 }, no_machines{ 0 }, max_ct{ 0 };
   ivec proc_times;
 
 public:
-  explicit FSPData(const std::string &filename)
+  explicit Instance(const std::string &filename)
   {
     std::ifstream inputFile(filename, std::ios::in);
     if (!inputFile) {
@@ -34,7 +36,7 @@ public:
   }
 
   template<class RNG>
-  FSPData(unsigned no_jobs_, unsigned no_machines_, RNG &rng, unsigned max)
+  Instance(unsigned no_jobs_, unsigned no_machines_, RNG &rng, unsigned max)
     : no_jobs{ no_jobs_ },
       no_machines{ no_machines_ }
   {
@@ -46,7 +48,7 @@ public:
     std::generate(begin(proc_times), end(proc_times), [&]() { return dist(rng) + 1; });
   }
 
-  FSPData(const std::vector<unsigned> &pts, unsigned no_jobs_, bool jobsPerMachines)
+  Instance(const std::vector<unsigned> &pts, unsigned no_jobs_, bool jobsPerMachines)
     : no_jobs{ no_jobs_ },
       no_machines{ static_cast<unsigned>(pts.size() / no_jobs) },
       proc_times(pts)
@@ -62,13 +64,13 @@ public:
     }
   }
 
-  FSPData(const std::vector<unsigned> &pts, unsigned no_jobs_)
-    : FSPData{ pts, no_jobs_, false } {};
+  Instance(const std::vector<unsigned> &pts, unsigned no_jobs_)
+    : Instance{ pts, no_jobs_, false } {};
 
 
-  friend auto operator<<(std::ostream &o, const FSPData &d) -> std::ostream &
+  friend auto operator<<(std::ostream &o, const Instance &d) -> std::ostream &
   {
-    o << "FSPData:\n"//
+    o << "Instance:\n"//
       << "  no_jobs: " << d.no_jobs << '\n'//
       << "  no_machines: " << d.no_machines << '\n';//
     const double scale = 1.0 / std::log(10);
@@ -115,7 +117,7 @@ public:
     return sm;
   }
 
-  friend auto operator==(const FSPData &lhs, const FSPData &rhs) -> bool
+  friend auto operator==(const Instance &lhs, const Instance &rhs) -> bool
   {
     return lhs.noJobs() == rhs.noJobs() &&//
            lhs.noMachines() == rhs.noMachines() &&//
@@ -125,3 +127,5 @@ public:
              rhs.procTimesRef().end());
   }
 };
+
+}// namespace fsp

@@ -1,16 +1,18 @@
 #pragma once
 
-#include "FSPData.hpp"
+#include "Instance.hpp"
 #include "Neighbor.hpp"
 #include "NoIdleNeighborEvalCompiler.hpp"
 #include "Schedule.hpp"
+
+namespace fsp {
 
 class NoIdleFlowtimeNeighborEvalFunction
 {
   NoIdleNeighborEvalCompiler compiler;
 
 public:
-  explicit NoIdleFlowtimeNeighborEvalFunction(const FSPData &data) : compiler{ data } {}
+  explicit NoIdleFlowtimeNeighborEvalFunction(const Instance &data) : compiler{ data } {}
 
   auto operator()(const Schedule &perm, const Neighbor &ngh) -> double
   {
@@ -19,3 +21,5 @@ public:
     return compiler.sumCompletionTimes();
   }
 };
+
+}// namespace fsp

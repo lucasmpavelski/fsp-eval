@@ -2,24 +2,28 @@
 
 #include <vector>
 
-#include "FSPData.hpp"
+#include "Instance.hpp"
 #include "Schedule.hpp"
 
-class PermutationCompiler {
-  const FSPData& fspData;
+namespace fsp {
+
+class PermutationCompiler
+{
+  const Instance &instance;
   std::vector<unsigned> part_ct;
   std::vector<unsigned> cache;
   unsigned noJobs;
 
- public:
-  explicit PermutationCompiler(const FSPData& fspData)
-      : fspData{fspData}, part_ct(fspData.noJobs() * fspData.noMachines()), cache(fspData.noJobs()), noJobs(fspData.noJobs()) {}
+public:
+  explicit PermutationCompiler(const Instance &instance)
+    : instance{ instance }, part_ct(instance.noJobs() * instance.noMachines()), cache(instance.noJobs()), noJobs(instance.noJobs()) {}
 
-  void compile(const Schedule& _fsp, std::vector<unsigned>& Ct) {
+  void compile(const Schedule &_fsp, std::vector<unsigned> &Ct)
+  {
     const auto _N = static_cast<unsigned>(_fsp.size());
-    const auto N = fspData.noJobs();
-    const auto M = fspData.noMachines();
-    const auto& p = fspData.procTimesRef();
+    const auto N = instance.noJobs();
+    const auto M = instance.noMachines();
+    const auto &p = instance.procTimesRef();
 
     // std::cout << _fsp << '\n';
 
@@ -52,25 +56,24 @@ class PermutationCompiler {
         int ct_jm1_m = part_ct[j * N + i - 1];
         int ct_j_mm1 = part_ct[(j - 1) * N + i];
         int pt_i = p[j * N + pt_index];
-        part_ct[j * N + i] = 
+        part_ct[j * N + i] =
           std::max(ct_jm1_m, ct_j_mm1) + pt_i;
       }
     }
     cache[0] = _fsp[0];
 
 
+    /** extra **/
+    // idle += std::max(part_ct[(j - 1) * N + i] - part_ct[j * N + i - 1],
+    // 0); std::cout << '(' << i << ',' << j << ')' << std::max(part_ct[(j -
+    // 1) * N + i] - part_ct[j * N + i - 1], 0) << ' ';
+    /** extra **/
 
-        /** extra **/
-        // idle += std::max(part_ct[(j - 1) * N + i] - part_ct[j * N + i - 1],
-        // 0); std::cout << '(' << i << ',' << j << ')' << std::max(part_ct[(j -
-        // 1) * N + i] - part_ct[j * N + i - 1], 0) << ' ';
-        /** extra **/
-
-        /** extra **/
-        // wait += std::max(part_ct[j * N + i - 1] - part_ct[(j - 1) * N + i] ,
-        // 0); std::cout << '(' << i << ',' << j << ')' << std::max(part_ct[(j -
-        // 1) * N + i] - part_ct[j * N + i - 1], 0) << ' ';
-        /** extra **/
+    /** extra **/
+    // wait += std::max(part_ct[j * N + i - 1] - part_ct[(j - 1) * N + i] ,
+    // 0); std::cout << '(' << i << ',' << j << ')' << std::max(part_ct[(j -
+    // 1) * N + i] - part_ct[j * N + i - 1], 0) << ' ';
+    /** extra **/
 
     /** extra **/
     // std::cout << "final idle " << idle << '\n';
@@ -82,3 +85,5 @@ class PermutationCompiler {
     Ct.assign(fromCt, toCt);
   }
 };
+
+}// namespace fsp

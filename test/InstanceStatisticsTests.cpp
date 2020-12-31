@@ -1,15 +1,15 @@
 #include <catch2/catch.hpp>
 #include <vector>
 
-#include <vector>
+#include "../src/InstanceStatistics.hpp"
 
-#include "../src/FSPDataStatistics.hpp"
+using namespace fsp;
 
 TEST_CASE("FSP data statistics", "[fsp]") {
   const std::vector<unsigned> procTimes = { 1, 2, 3, 4, 5, 6 };
   const int no_jobs = 2;
-  FSPData fspData(procTimes, no_jobs);
-  FSPDataStatistics stats(fspData);
+  Instance instance(procTimes, no_jobs);
+  InstanceStatistics stats(instance);
 
   SECTION("sum of processing times by job is correct")
   {

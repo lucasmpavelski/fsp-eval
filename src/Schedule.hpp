@@ -8,6 +8,8 @@
 #include <numeric>
 #include <cassert>
 
+namespace fsp {
+
 class Schedule
 {
 public:
@@ -88,3 +90,5 @@ private:
     return std::is_permutation(begin(), end(), permutation.begin());
   }
 };
+
+}// namespace fsp

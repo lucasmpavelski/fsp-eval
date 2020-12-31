@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <string_view>
 
+namespace fsp {
+
 enum class Type {
   PERMUTATION,
   NOWAIT,
@@ -43,3 +45,5 @@ auto operator<<(std::basic_ostream<T> &os, const Type &type) -> std::basic_ostre
 {
   return os << asString(type);
 }
+
+}// namespace fsp

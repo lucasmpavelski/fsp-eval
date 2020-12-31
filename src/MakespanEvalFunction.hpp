@@ -3,6 +3,8 @@
 #include "Schedule.hpp"
 #include "EvalFunction.hpp"
 
+namespace fsp {
+
 class MakespanEvalFunction : virtual public EvalFunction
 {
 public:
@@ -19,3 +21,5 @@ public:
     return Objective::MAKESPAN;
   }
 };
+
+}// namespace fsp

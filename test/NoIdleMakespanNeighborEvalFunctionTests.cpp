@@ -4,9 +4,11 @@
 
 #include "../src/Schedule.hpp"
 #include "../src/Neighbor.hpp"
-#include "../src/FSPData.hpp"
+#include "../src/Instance.hpp"
 #include "../src/NoIdleMakespanEvalFunction.hpp"
 #include "../src/NoIdleMakespanNeighborEvalFunction.hpp"
+
+using namespace fsp;
 
 
 TEST_CASE("No-idle makespan neighbors give the same results as full evaluation", "[fsp]")
@@ -17,15 +19,15 @@ TEST_CASE("No-idle makespan neighbors give the same results as full evaluation",
   const auto noJobs = 50;
   const auto noMachines = 10;
   const auto maxPt = 99;
-  FSPData fspData(noJobs, noMachines, rng, maxPt);
+  Instance instance(noJobs, noMachines, rng, maxPt);
 
-  NoIdleMakespanEvalFunction eval(fspData);
-  NoIdleMakespanNeighborEvalFunction neighborEval(fspData);
+  NoIdleMakespanEvalFunction eval(instance);
+  NoIdleMakespanNeighborEvalFunction neighborEval(instance);
 
-  Schedule schedule(fspData.noJobs());
+  Schedule schedule(instance.noJobs());
 
-  std::uniform_int_distribution<int> dist(0, fspData.noJobs() - 1);
-  for (int i = 0; i < fspData.noJobs(); i++) {
+  std::uniform_int_distribution<int> dist(0, instance.noJobs() - 1);
+  for (int i = 0; i < instance.noJobs(); i++) {
     int from = 0;
     int to = 0;
     do {

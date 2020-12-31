@@ -5,14 +5,19 @@
 #include <utility>
 #include <vector>
 
-#include "FSPData.hpp"
+#include "Instance.hpp"
 #include "PermutationEvalFunction.hpp"
 #include "MakespanEvalFunction.hpp"
 #include "Schedule.hpp"
 
+namespace fsp {
 
-class PermutationMakespanEvalFunction : public PermutationEvalFunction, public MakespanEvalFunction {
- public:
-  explicit PermutationMakespanEvalFunction(const FSPData& fspData)
-      : EvalFunction{fspData}, PermutationEvalFunction{fspData} {}
+class PermutationMakespanEvalFunction : public PermutationEvalFunction
+  , public MakespanEvalFunction
+{
+public:
+  explicit PermutationMakespanEvalFunction(const Instance &instance)
+    : EvalFunction{ instance }, PermutationEvalFunction{ instance } {}
 };
+
+}// namespace fsp

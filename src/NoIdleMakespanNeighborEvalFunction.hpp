@@ -3,14 +3,16 @@
 #include "Neighbor.hpp"
 #include "NoIdleNeighborEvalCompiler.hpp"
 #include "Schedule.hpp"
-#include "FSPData.hpp"
+#include "Instance.hpp"
+
+namespace fsp {
 
 class NoIdleMakespanNeighborEvalFunction
 {
   NoIdleNeighborEvalCompiler compiler;
 
 public:
-  explicit NoIdleMakespanNeighborEvalFunction(const FSPData &data) : compiler{ data } {}
+  explicit NoIdleMakespanNeighborEvalFunction(const Instance &data) : compiler{ data } {}
 
   auto operator()(const Schedule &perm, const Neighbor &ngh) -> double
   {
@@ -19,3 +21,5 @@ public:
     return compiler.compiledCompletionTime(static_cast<int>(perm.size()) - 1);
   }
 };
+
+}// namespace fsp

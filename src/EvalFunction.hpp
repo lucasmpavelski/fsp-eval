@@ -6,27 +6,29 @@
 #include <utility>
 #include <vector>
 
-#include "FSPData.hpp"
+#include "Instance.hpp"
 #include "Schedule.hpp"
 #include "Type.hpp"
 #include "Objective.hpp"
 
+namespace fsp {
+
 class EvalFunction
 {
-  FSPData fspData;
+  Instance instance;
   std::vector<unsigned> compTimes;
 
 public:
-  explicit EvalFunction(FSPData fd) : fspData{ std::move(fd) }, compTimes(fspData.noJobs()) {}
+  explicit EvalFunction(Instance fd) : instance{ std::move(fd) }, compTimes(instance.noJobs()) {}
   EvalFunction(const EvalFunction &) = default;
   EvalFunction(EvalFunction &&) = default;
   virtual ~EvalFunction() = default;
   EvalFunction &operator=(const EvalFunction &other) = default;
   EvalFunction &operator=(EvalFunction &&other) = default;
 
-  [[nodiscard]] auto noJobs() const -> unsigned { return fspData.noJobs(); }
-  [[nodiscard]] auto noMachines() const -> unsigned { return fspData.noMachines(); }
-  [[nodiscard]] auto getData() const -> const FSPData & { return fspData; }
+  [[nodiscard]] auto noJobs() const -> unsigned { return instance.noJobs(); }
+  [[nodiscard]] auto noMachines() const -> unsigned { return instance.noMachines(); }
+  [[nodiscard]] auto getData() const -> const Instance & { return instance; }
   [[nodiscard]] virtual auto type() const -> Type = 0;
   [[nodiscard]] virtual auto objective() const -> Objective = 0;
 
@@ -35,7 +37,7 @@ public:
     o << "FSPEval\n"
       << "  type: " << type() << '\n'
       << "  objective: " << objective() << '\n'
-      << fspData;
+      << instance;
   }
 
   virtual auto operator()(const Schedule &schedule) -> double = 0;
@@ -55,3 +57,5 @@ protected:
   virtual void compileCompletionTimes(const Schedule &schedule,
     std::vector<unsigned> &ct) = 0;
 };
+
+}// namespace fsp

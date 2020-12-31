@@ -7,8 +7,10 @@
 
 #include "Neighbor.hpp"
 #include "Schedule.hpp"
-#include "FSPData.hpp"
+#include "Instance.hpp"
 #include "EvalFunction.hpp"
+
+namespace fsp {
 
 class PermutationMakespanNeighborEvalFunction
 {
@@ -17,21 +19,21 @@ class PermutationMakespanNeighborEvalFunction
   {
   private:
     using ivec = std::vector<int>;
-    const FSPData &fspData;
+    const Instance &instance;
     ivec e_times, q_times, f_times, makespan;
     Schedule compiledSolution;
 
   public:
-    explicit CompiledSchedule(const FSPData &fspData)
-      : fspData(fspData),
-        e_times((fspData.noJobs() + 1) * (fspData.noMachines() + 1)),
-        q_times((fspData.noJobs() + 1) * (fspData.noMachines() + 2)),
-        f_times((fspData.noJobs() + 1) * (fspData.noMachines() + 1)),
-        makespan(fspData.noJobs()),
+    explicit CompiledSchedule(const Instance &instance)
+      : instance(instance),
+        e_times((instance.noJobs() + 1) * (instance.noMachines() + 1)),
+        q_times((instance.noJobs() + 1) * (instance.noMachines() + 2)),
+        f_times((instance.noJobs() + 1) * (instance.noMachines() + 1)),
+        makespan(instance.noJobs()),
         compiledSolution(0)
     {
-      const unsigned no_jobs = fspData.noJobs();
-      const unsigned no_machines = fspData.noMachines();
+      const unsigned no_jobs = instance.noJobs();
+      const unsigned no_machines = instance.noMachines();
       e_(0, 0) = 0;
       for (int i = 1; i <= no_machines; i++) {
         e_(0U, i) = 0;
@@ -53,17 +55,17 @@ class PermutationMakespanNeighborEvalFunction
 
     inline auto e_(const unsigned j, const unsigned m) -> int &
     {
-      return e_times[m * (fspData.noJobs() + 1) + j];
+      return e_times[m * (instance.noJobs() + 1) + j];
     }
 
     inline auto q_(const unsigned j, const unsigned m) -> int &
     {
-      return q_times[m * (fspData.noJobs() + 1) + j];
+      return q_times[m * (instance.noJobs() + 1) + j];
     }
 
     inline auto f_(const unsigned j, const unsigned m) -> int &
     {
-      return f_times[m * (fspData.noJobs() + 1) + j];
+      return f_times[m * (instance.noJobs() + 1) + j];
     }
 
     void compile(const Schedule &seq)
@@ -73,14 +75,14 @@ class PermutationMakespanNeighborEvalFunction
 
     void compile(const Schedule &seq, int from)
     {
-      const auto no_jobs = fspData.noJobs();
-      const auto no_machines = fspData.noMachines();
+      const auto no_jobs = instance.noJobs();
+      const auto no_machines = instance.noMachines();
       const auto seq_size = static_cast<int>(seq.size());
 
       for (int i = from + 1; i <= seq_size - 1; i++) {
         auto seq_i = seq[i - 1];
         for (int j = 1; j <= no_machines; j++) {
-          const auto pt = static_cast<int>(fspData.pt(seq_i, j - 1));
+          const auto pt = static_cast<int>(instance.pt(seq_i, j - 1));
           e_(i, j) = std::max(e_(i, j - 1), e_(i - 1, j)) + pt;
         }
       }
@@ -93,14 +95,14 @@ class PermutationMakespanNeighborEvalFunction
       for (int i = seq_size - 1; i >= 1; i--) {
         auto seq_i = seq[i - 1];
         for (int j = no_machines; j >= 1; j--) {
-          const auto pt = static_cast<int>(fspData.pt(seq_i, j - 1));
+          const auto pt = static_cast<int>(instance.pt(seq_i, j - 1));
           q_(i, j) = std::max(q_(i, j + 1), q_(i + 1, j)) + pt;
         }
       }
       for (int i = 1; i <= seq_size; i++) {
         auto seq_k = seq[seq_size - 1];
         for (int j = 1; j <= no_machines; j++) {
-          const auto pt = static_cast<int>(fspData.pt(seq_k, j - 1));
+          const auto pt = static_cast<int>(instance.pt(seq_k, j - 1));
           f_(i, j) = std::max(f_(i, j - 1), e_(i - 1, j)) + pt;
         }
       }
@@ -133,10 +135,10 @@ class PermutationMakespanNeighborEvalFunction
   std::vector<CompiledSchedule> compiledSchedules;
 
 public:
-  explicit PermutationMakespanNeighborEvalFunction(const FSPData &fspData) : compiledSchedules{}
+  explicit PermutationMakespanNeighborEvalFunction(const Instance &instance) : compiledSchedules{}
   {
-    for (unsigned i = 0; i < fspData.noJobs(); i++) {
-      compiledSchedules.emplace_back(fspData);
+    for (unsigned i = 0; i < instance.noJobs(); i++) {
+      compiledSchedules.emplace_back(instance);
     }
   }
 
@@ -147,3 +149,5 @@ public:
     return cache.getMakespan(sol, firstSecond.first, firstSecond.second);
   }
 };
+
+}// namespace fsp

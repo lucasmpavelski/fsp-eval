@@ -1,18 +1,19 @@
 #pragma once
 
 #include "Schedule.hpp"
-#include "FSPData.hpp"
+#include "Instance.hpp"
 #include "EvalFunction.hpp"
 #include "Type.hpp"
 #include "NoIdleCompletionTimesCompiler.hpp"
 
+namespace fsp {
 
 class NoIdleEvalFunction : public virtual EvalFunction
 {
   NoIdleCompletionTimesCompiler compiler;
 
 public:
-  explicit NoIdleEvalFunction(const FSPData &data) : compiler(data) {}
+  explicit NoIdleEvalFunction(const Instance &data) : compiler(data) {}
 
   [[nodiscard]] auto type() const -> Type override { return Type::NOIDLE; }
 
@@ -22,3 +23,5 @@ protected:
     compiler.compile(sol, ct);
   }
 };
+
+}// namespace fsp

@@ -11,8 +11,8 @@ target_link_libraries(catch_main PRIVATE project_options)
 
 add_executable(
   tests 
-  FSPDataTests.cpp
-  FSPDataStatisticsTests.cpp
+  InstanceTests.cpp
+  InstanceStatisticsTests.cpp
   ScheduleTests.cpp
   PermutationMakespanEvalFunctionTests.cpp
   PermutationFlowtimeEvalFunctionTests.cpp
